@@ -1,0 +1,12 @@
+<launch>
+    <arg name="node_start_delay" default="1.0" />  
+    <arg name="config_path" default="$(find cepton2_ros)/config/default_params.yaml" doc="Path to the YAML config file"/>
+
+    <node pkg="nodelet" type="nodelet" name="cepton_manager" args="manager" output="screen" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " />
+
+
+    <node pkg="nodelet" type="nodelet" name="cepton2_publisher" args="load cepton2_ros/PublisherNodelet cepton_manager" output="screen">
+        <rosparam file="$(arg config_path)"/>
+    </node>
+    
+</launch>
