@@ -1,0 +1,6 @@
+# YAML configuration file for loading default parameters into PubsliherNodelet
+
+topic_prefix: "cepton2/points"
+capture_path: ""
+capture_loop: true
+include_invalid_points: false
