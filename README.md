@@ -1,5 +1,11 @@
 # Cepton2 ROS
 
+## 0.0 Usage
+After catkin_make and source, use the following launch file to start the driver:
+```sh
+roslaunch cepton2_ros driver.launch
+```
+
 ## 1.0 - Overview
 
 This ROS package provides support for Cepton LiDAR with SDK Version >= 2.0.
