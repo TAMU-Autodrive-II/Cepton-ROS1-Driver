@@ -180,8 +180,9 @@ namespace cepton2_ros {
         // Configure cloud
         //point_cloud.header.stamp = cepton2_ros::rosutil::to_usec(ros::Time::now());
         long long chronyTimestamp = getChronyTimestamp();
-        point_cloud.header.stamp.sec = chronyTimestamp / (int64_t)1e6;
-        point_cloud.header.stamp.nanosec = chronyTimestamp % (int64_t)1e6 * (int64_t)1e3;
+        point_cloud.header.stamp = ros::Time(chronyTimestamp / (int64_t)1e6, chronyTimestamp % (int64_t)1e6 * (int64_t)1e3)
+        //point_cloud.header.stamp.sec = chronyTimestamp / (int64_t)1e6;
+        //point_cloud.header.stamp.nanosec = chronyTimestamp % (int64_t)1e6 * (int64_t)1e3;
         
         //point_cloud.header.stamp = start_timestamp;
         //point_cloud.header.frame_id = "cepton2";
