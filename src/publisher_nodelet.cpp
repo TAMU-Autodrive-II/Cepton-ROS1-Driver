@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 #include <pluginlib/class_list_macros.h>
+#include <iostream>
+#include <chrono>
+#include <regex>
 
 PLUGINLIB_EXPORT_CLASS(cepton2_ros::PublisherNodelet, nodelet::Nodelet);
 
