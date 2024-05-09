@@ -79,7 +79,7 @@ namespace cepton2_ros {
         printf("Sensor(s) connected.\n");
 
         // Listen for frames
-        ret = CeptonListenFrames(CEPTON_AGGREGATION_MODE_NATURAL, FrameCallbackWrapper, this);
+        ret = CeptonListenFrames(CEPTON_AGGREGATION_MODE_FIXED_10Hz, FrameCallbackWrapper, this);
         check_api_error(ret, "CeptonListenFrames");
         
         // Listen for sensor info
@@ -100,6 +100,43 @@ namespace cepton2_ros {
             });
 
     } // PublisherNodelet::onInit
+    
+    long long getChronyTimestamp() {
+    FILE* pipe = popen("chronyc -n tracking 2>&1", "r");
+    if (!pipe) {
+        std::cerr << "Error opening pipe to chronyc command." << std::endl;
+        return -1;
+    }
+
+    char buffer[128];
+    std::string result = "";
+    while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+        result += buffer;
+    }
+
+    auto pcloseStatus = pclose(pipe);
+    if (pcloseStatus == -1) {
+        std::cerr << "Error closing pipe to chronyc command." << std::endl;
+        return -1;
+    }
+
+    // Extract last offset value using regular expression
+    std::regex offsetRegex("Last offset\\s+:\\s+([+-]?\\d+\\.\\d+)\\s+seconds");
+    std::smatch offsetMatch;
+    if (std::regex_search(result, offsetMatch, offsetRegex)) {
+        std::string offsetStr = offsetMatch[1];
+        double lastOffset = std::stod(offsetStr);
+
+        // Get current time and adjust using the last offset
+        auto currentTime = std::chrono::system_clock::now();
+        auto timeSinceEpoch = std::chrono::duration_cast<std::chrono::microseconds>(currentTime.time_since_epoch());
+        auto adjustedTime = timeSinceEpoch + std::chrono::microseconds(static_cast<long long>(lastOffset * 1e6));
+
+        return adjustedTime.count();
+    }
+
+    return -1;
+    }   
 
     void PublisherNodelet::FrameCallbackWrapper(CeptonSensorHandle handle, int64_t start_timestamp,
                    size_t n_points, size_t stride, const uint8_t *points,
@@ -139,8 +176,12 @@ namespace cepton2_ros {
         
         // Configure cloud
         //point_cloud.header.stamp = cepton2_ros::rosutil::to_usec(ros::Time::now());
-        point_cloud.header.stamp = start_timestamp;
-        point_cloud.header.frame_id = "cepton2";
+        long long chronyTimestamp = getChronyTimestamp();
+        point_cloud.header.stamp.sec = chronyTimestamp / (int64_t)1e6;
+        point_cloud.header.stamp.nanosec = chronyTimestamp % (int64_t)1e6 * (int64_t)1e3;
+        
+        //point_cloud.header.stamp = start_timestamp;
+        //point_cloud.header.frame_id = "cepton2";
         point_cloud.height = 1;
         point_cloud.width = local_points.size();
         point_cloud.resize(local_points.size());
