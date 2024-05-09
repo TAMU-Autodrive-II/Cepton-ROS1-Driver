@@ -79,7 +79,7 @@ namespace cepton2_ros {
         printf("Sensor(s) connected.\n");
 
         // Listen for frames
-        ret = CeptonListenFrames(CEPTON_AGGREGATION_MODE_NATURAL, FrameCallbackWrapper, this);
+        ret = CeptonListenFrames(CEPTON_AGGREGATION_MODE_FIXED_10Hz, FrameCallbackWrapper, this);
         check_api_error(ret, "CeptonListenFrames");
         
         // Listen for sensor info
