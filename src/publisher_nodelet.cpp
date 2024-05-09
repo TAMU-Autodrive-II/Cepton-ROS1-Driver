@@ -6,6 +6,7 @@
 #include <iostream>
 #include <chrono>
 #include <regex>
+#include "ros/ros.h"
 
 PLUGINLIB_EXPORT_CLASS(cepton2_ros::PublisherNodelet, nodelet::Nodelet);
 
