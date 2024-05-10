@@ -184,7 +184,7 @@ namespace cepton2_ros {
         uint64_t time_stamp = static_cast<uint64_t>(time_now.toNSec()/1000000);
         point_cloud.header.stamp = time_stamp;
         //point_cloud.header.stamp = start_timestamp;
-        //point_cloud.header.frame_id = "cepton2";
+        point_cloud.header.frame_id = "cepton2";
         point_cloud.height = 1;
         point_cloud.width = local_points.size();
         point_cloud.resize(local_points.size());
